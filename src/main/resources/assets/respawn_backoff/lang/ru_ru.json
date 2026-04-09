@@ -1,0 +1,7 @@
+{
+	"respawn_backoff.hud.countdown": "Возрождение через %s",
+	"respawn_backoff.command.reset.single": "Откат респавна для %s сброшен к минимуму (после следующей смерти: 1 минута).",
+	"respawn_backoff.command.reset.multiple": "Откат респавна сброшен к минимуму для %s игроков.",
+	"respawn_backoff.command.skip.single": "Ожидание респавна для %s пропущено.",
+	"respawn_backoff.command.skip.multiple": "Ожидание респавна пропущено для %s игроков."
+}
