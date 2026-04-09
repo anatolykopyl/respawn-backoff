@@ -55,6 +55,10 @@ public class RespawnBackoffMod implements ModInitializer {
 			ServerPlayer player = handler.player;
 			long now = System.currentTimeMillis();
 			RespawnBackoffData data = player.getAttachedOrElse(RESPAWN_BACKOFF, RespawnBackoffData.DEFAULT);
+			if (data.isCooldownFinished(now)) {
+				clearCooldownAndRestore(player, data);
+				return;
+			}
 			if (data.hasActiveCooldown(now)) {
 				if (!player.isSpectator()) {
 					player.setGameMode(GameType.SPECTATOR);
@@ -126,19 +130,13 @@ public class RespawnBackoffMod implements ModInitializer {
 
 	private static void tickPlayer(ServerPlayer player, long nowMs) {
 		RespawnBackoffData data = player.getAttachedOrElse(RESPAWN_BACKOFF, RespawnBackoffData.DEFAULT);
+		if (data.isCooldownFinished(nowMs)) {
+			clearCooldownAndRestore(player, data);
+			return;
+		}
 		if (data.hasActiveCooldown(nowMs)) {
 			data.deathLock().ifPresent(lock -> enforceDeathLock(player, lock));
 		}
-
-		if (!data.hasActiveCooldown(nowMs)) {
-			return;
-		}
-
-		if (nowMs < data.cooldownEndEpochMs()) {
-			return;
-		}
-
-		clearCooldownAndRestore(player, data);
 	}
 
 	/**
@@ -159,6 +157,7 @@ public class RespawnBackoffMod implements ModInitializer {
 			Optional.empty()
 		);
 		player.setAttached(RESPAWN_BACKOFF, cleared);
+		player.setCamera(player);
 		teleportToRespawnPoint(player);
 		if (player.isSpectator()) {
 			player.setGameMode(GameType.SURVIVAL);

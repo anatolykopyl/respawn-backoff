@@ -25,4 +25,9 @@ public record RespawnBackoffData(
 	public boolean hasActiveCooldown(long nowMs) {
 		return cooldownEndEpochMs > nowMs;
 	}
+
+	/** True once wall-clock time has reached the scheduled end (timer at zero or past). */
+	public boolean isCooldownFinished(long nowMs) {
+		return cooldownEndEpochMs > 0L && nowMs >= cooldownEndEpochMs;
+	}
 }
