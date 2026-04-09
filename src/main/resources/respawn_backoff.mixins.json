@@ -5,6 +5,9 @@
 	"mixins": [
 		"ServerPlayerGameModeMixin"
 	],
+	"client": [
+		"ToastManagerMixin"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}

@@ -3,7 +3,6 @@ package net.respawnbackoff.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -24,20 +23,18 @@ public class RespawnBackoffClient implements ClientModInitializer {
 			});
 		});
 
-		HudRenderCallback.EVENT.register((guiGraphics, tickDelta) -> {
-			if (!overlayActive) {
-				return;
-			}
-			Minecraft client = Minecraft.getInstance();
-			if (client.player == null) {
-				return;
-			}
-			long remainingMs = Math.max(0L, cooldownEndEpochMs - System.currentTimeMillis());
-			renderOverlay(guiGraphics, client, remainingMs);
-		});
 	}
 
-	private static void renderOverlay(GuiGraphics graphics, Minecraft client, long remainingMs) {
+	/** Invoked from a mixin after the toast manager draws (post-chat HUD), so opaque blackout sits above vanilla UI. */
+	public static void renderPenaltyOverlay(GuiGraphics graphics) {
+		if (!overlayActive) {
+			return;
+		}
+		Minecraft client = Minecraft.getInstance();
+		if (client.player == null) {
+			return;
+		}
+		long remainingMs = Math.max(0L, cooldownEndEpochMs - System.currentTimeMillis());
 		int w = client.getWindow().getGuiScaledWidth();
 		int h = client.getWindow().getGuiScaledHeight();
 		graphics.fill(0, 0, w, h, 0xFF000000);
@@ -49,14 +46,7 @@ public class RespawnBackoffClient implements ClientModInitializer {
 		Component line = Component.translatable("respawn_backoff.hud.countdown", time);
 
 		int textWidth = client.font.width(line);
-		graphics.drawString(
-			client.font,
-			line,
-			(w - textWidth) / 2,
-			h / 2,
-			0xFFFFFF,
-			false
-		);
+		graphics.drawString(client.font, line, (w - textWidth) / 2, h / 2, 0xFFFFFF, false);
 	}
 
 	public static void clearForDisconnect() {
