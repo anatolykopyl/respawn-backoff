@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "respawn_backoff",
+	"version": "${version}",
+	"name": "Respawn Backoff",
+	"description": "Doubling respawn delay with spectator blackout until the timer ends.",
+	"authors": [],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.respawnbackoff.RespawnBackoffMod"
+		],
+		"client": [
+			"net.respawnbackoff.client.RespawnBackoffClient"
+		]
+	},
+	"mixins": [
+		"respawn_backoff.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.5",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

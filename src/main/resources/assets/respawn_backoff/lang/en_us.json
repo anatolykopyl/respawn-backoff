@@ -1,0 +1,7 @@
+{
+	"respawn_backoff.hud.countdown": "Respawn in %s",
+	"respawn_backoff.command.reset.single": "Reset respawn backoff for %s to the minimum (next death: 1 minute).",
+	"respawn_backoff.command.reset.multiple": "Reset respawn backoff to the minimum for %s players.",
+	"respawn_backoff.command.skip.single": "Skipped respawn wait for %s.",
+	"respawn_backoff.command.skip.multiple": "Skipped respawn wait for %s players."
+}
