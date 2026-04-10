@@ -6,7 +6,7 @@
 		"ServerPlayerGameModeMixin"
 	],
 	"client": [
-		"ToastManagerMixin"
+		"GuiMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -27,7 +27,7 @@ public class RespawnBackoffClient implements ClientModInitializer {
 
 	}
 
-	/** Invoked from a mixin after the toast manager draws (post-chat HUD), so opaque blackout sits above vanilla UI. */
+	/** Invoked from a mixin at the end of {@link net.minecraft.client.gui.Gui#render} (HUD + chat). Pause UI and toasts draw later. */
 	public static void renderPenaltyOverlay(GuiGraphics graphics) {
 		if (!overlayActive) {
 			return;
