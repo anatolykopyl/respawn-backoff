@@ -8,6 +8,11 @@ public final class RespawnBackoffNetworking {
 	}
 
 	public static void sendCooldown(ServerPlayer player, boolean active, long cooldownEndEpochMs) {
-		ServerPlayNetworking.send(player, new CooldownSyncPayload(active, cooldownEndEpochMs));
+		long nextMinutes = 0L;
+		if (active) {
+			RespawnBackoffData data = player.getAttachedOrElse(RespawnBackoffMod.RESPAWN_BACKOFF, RespawnBackoffData.DEFAULT);
+			nextMinutes = data.nextDeathWaitMinutes();
+		}
+		ServerPlayNetworking.send(player, new CooldownSyncPayload(active, cooldownEndEpochMs, nextMinutes));
 	}
 }

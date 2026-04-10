@@ -30,4 +30,12 @@ public record RespawnBackoffData(
 	public boolean isCooldownFinished(long nowMs) {
 		return cooldownEndEpochMs > 0L && nowMs >= cooldownEndEpochMs;
 	}
+
+	/**
+	 * Spectator wait length in whole minutes if the player dies again now (same formula as the next death).
+	 */
+	public long nextDeathWaitMinutes() {
+		int cappedExp = Math.min(exponent, 6);
+		return Math.min(1L << cappedExp, 64L);
+	}
 }
