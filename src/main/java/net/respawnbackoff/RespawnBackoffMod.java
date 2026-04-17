@@ -1,7 +1,7 @@
 package net.respawnbackoff;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +24,9 @@ import net.minecraft.world.level.GameType;
 
 public class RespawnBackoffMod implements ModInitializer {
 	public static final String MOD_ID = "respawn_backoff";
+
+	/** Calendar day for resetting the death-chain exponent: midnight MSK (UTC+3). */
+	private static final ZoneId DAILY_RESET_ZONE = ZoneId.of("Europe/Moscow");
 
 	public static final AttachmentType<RespawnBackoffData> RESPAWN_BACKOFF = AttachmentRegistry.create(
 		ResourceLocation.fromNamespaceAndPath(MOD_ID, "state"),
@@ -78,12 +81,12 @@ public class RespawnBackoffMod implements ModInitializer {
 		});
 	}
 
-	private static long currentUtcEpochDay() {
-		return LocalDate.now(ZoneOffset.UTC).toEpochDay();
+	private static long currentResetEpochDay() {
+		return LocalDate.now(DAILY_RESET_ZONE).toEpochDay();
 	}
 
 	static void onPlayerDeath(ServerPlayer player) {
-		long today = currentUtcEpochDay();
+		long today = currentResetEpochDay();
 		RespawnBackoffData data = player.getAttachedOrElse(RESPAWN_BACKOFF, RespawnBackoffData.DEFAULT);
 
 		int exponent = data.exponent();
@@ -166,11 +169,11 @@ public class RespawnBackoffMod implements ModInitializer {
 	}
 
 	/**
-	 * Next death uses the minimum wait (1 minute): exponent 0 and today's UTC day recorded.
+	 * Next death uses the minimum wait (1 minute): exponent 0 and today's calendar day (MSK) recorded.
 	 * Does not end an active on-screen countdown; use {@link #skipCooldown} for that.
 	 */
 	public static void resetBackoffChain(ServerPlayer player) {
-		long today = currentUtcEpochDay();
+		long today = currentResetEpochDay();
 		RespawnBackoffData data = player.getAttachedOrElse(RESPAWN_BACKOFF, RespawnBackoffData.DEFAULT);
 		RespawnBackoffData next = new RespawnBackoffData(
 			0,

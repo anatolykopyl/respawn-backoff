@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.respawnbackoff.CooldownSyncPayload;
 
@@ -27,8 +28,28 @@ public class RespawnBackoffClient implements ClientModInitializer {
 
 	}
 
-	/** Invoked from a mixin at the end of {@link net.minecraft.client.gui.Gui#render} (HUD + chat). Pause UI and toasts draw later. */
-	public static void renderPenaltyOverlay(GuiGraphics graphics) {
+	/**
+	 * Invoked from a mixin at the end of {@link net.minecraft.client.renderer.GameRenderer#render} so chat,
+	 * Jade, and other late overlays sit underneath the blackout. Skipped while any screen is open.
+	 */
+	public static void renderPenaltyOverlayEndOfFrame() {
+		if (!overlayActive) {
+			return;
+		}
+		Minecraft client = Minecraft.getInstance();
+		if (client.player == null || client.screen != null) {
+			return;
+		}
+		MultiBufferSource.BufferSource bufferSource = client.renderBuffers().bufferSource();
+		GuiGraphics graphics = new GuiGraphics(client, bufferSource);
+		try {
+			renderPenaltyOverlay(graphics);
+		} finally {
+			graphics.flush();
+		}
+	}
+
+	private static void renderPenaltyOverlay(GuiGraphics graphics) {
 		if (!overlayActive) {
 			return;
 		}
