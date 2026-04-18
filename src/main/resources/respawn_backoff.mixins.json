@@ -6,7 +6,7 @@
 		"ServerPlayerGameModeMixin"
 	],
 	"client": [
-		"GameRendererMixin"
+		"GuiMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
